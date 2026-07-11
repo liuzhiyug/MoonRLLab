@@ -2,6 +2,17 @@
 
 MoonRLLab is a small reinforcement-learning lab written in MoonBit for the 2026 MoonBit Software Synthesis Challenge.
 
+Repository links:
+
+- GitLink: https://gitlink.org.cn/lzylzy78/MoonRLLab
+- GitHub: https://github.com/liuzhiyug/MoonRLLab
+
+Project policy:
+
+- default branch for submission: `master`
+- primary contributor: `刘智宇 <2579597201@qq.com>`
+- no external contributor names are used in the history
+
 It focuses on a practical but expandable slice of the RL stack:
 
 - `Environment`: finite, discrete environments with reset/step/render support
@@ -44,4 +55,3 @@ This project is newly authored for the competition. It does not copy upstream RL
 ## License
 
 Apache-2.0
-
