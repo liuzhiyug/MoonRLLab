@@ -1,3 +1,4 @@
+///|
 /// MoonRLLab is a compact reinforcement-learning lab for discrete problems.
 ///
 /// The project focuses on a small but extensible tabular stack:
@@ -9,6 +10,7 @@ pub fn project_name() -> String {
   "MoonRLLab"
 }
 
+///|
 pub fn run_demo() -> TrainingReport {
   let env = GridWorldEnv::new()
   let states = env.state_space()
@@ -20,6 +22,7 @@ pub fn run_demo() -> TrainingReport {
   trainer.train_q_learning(env, agent, logger)
 }
 
+///|
 pub fn run_sarsa_demo() -> TrainingReport {
   let env = GridWorldEnv::new()
   let states = env.state_space()

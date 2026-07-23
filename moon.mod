@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "username/MoonRLLab"
+name = "lzylzy78/moonrllab"
 
 version = "0.1.0"
 
@@ -19,7 +19,13 @@ repository = ""
 
 license = "Apache-2.0"
 
-keywords = ["moonbit", "reinforcement-learning", "q-learning", "sarsa", "gridworld"]
+keywords = [
+  "moonbit",
+  "reinforcement-learning",
+  "q-learning",
+  "sarsa",
+  "gridworld",
+]
 
 preferred_target = "wasm-gc"
 

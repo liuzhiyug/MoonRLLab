@@ -1,5 +1,5 @@
 ///|
 fn main {
-  let demo = @MoonRLLab.run_demo()
+  let demo = @moonrllab.run_demo()
   println(demo.compact_line())
 }

@@ -1,8 +1,10 @@
+///|
 enum EpisodeStage {
   Running
   Finished
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
+///|
 struct Transition {
   state : Int
   action : Int
@@ -10,16 +12,18 @@ struct Transition {
   next_state : Int
   done : Bool
   mut step : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
+///|
 struct EpisodeRecord {
   episode : Int
   steps : Int
   reward : Double
   goal_reached : Bool
   final_state : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
+///|
 struct TrainingReport {
   label : String
   episodes : Int
@@ -27,8 +31,9 @@ struct TrainingReport {
   mut steps : Array[Int]
   mut goal_hits : Int
   mut final_epsilon : Double
-} derive(Show)
+} derive(Debug)
 
+///|
 fn TrainingReport::summary(self : TrainingReport) -> String {
   let mut total_reward = 0.0
   let mut total_steps = 0
@@ -72,6 +77,7 @@ fn TrainingReport::summary(self : TrainingReport) -> String {
   summary8
 }
 
+///|
 pub fn TrainingReport::compact_line(self : TrainingReport) -> String {
   let mut total_reward = 0.0
   let mut tail_reward = 0.0
@@ -94,6 +100,7 @@ pub fn TrainingReport::compact_line(self : TrainingReport) -> String {
   "\{self.label}: avg_reward=\{total_reward / self.episodes.to_double()}, tail10=\{tail_average}, goal_hits=\{self.goal_hits}"
 }
 
+///|
 pub fn Transition::new(
   state : Int,
   action : Int,
@@ -105,12 +112,14 @@ pub fn Transition::new(
   { state, action, reward, next_state, done, step }
 }
 
+///|
 struct QTable {
   state_count : Int
   action_count : Int
   values : Array[Array[Double]]
-} derive(Show)
+} derive(Debug)
 
+///|
 fn QTable::new(state_count : Int, action_count : Int) -> QTable {
   let values = Array::make(state_count, Array::make(action_count, 0.0))
   let mut i = 0
@@ -121,6 +130,7 @@ fn QTable::new(state_count : Int, action_count : Int) -> QTable {
   { state_count, action_count, values }
 }
 
+///|
 fn QTable::row(self : QTable, state : Int) -> Array[Double] {
   if state < 0 || state >= self.state_count {
     Array::make(self.action_count, 0.0)
@@ -129,20 +139,34 @@ fn QTable::row(self : QTable, state : Int) -> Array[Double] {
   }
 }
 
+///|
 fn QTable::value(self : QTable, state : Int, action : Int) -> Double {
-  if state < 0 || state >= self.state_count || action < 0 || action >= self.action_count {
+  if state < 0 ||
+    state >= self.state_count ||
+    action < 0 ||
+    action >= self.action_count {
     0.0
   } else {
     self.values[state][action]
   }
 }
 
-fn QTable::set_value(self : QTable, state : Int, action : Int, value : Double) -> Unit {
-  if state >= 0 && state < self.state_count && action >= 0 && action < self.action_count {
+///|
+fn QTable::set_value(
+  self : QTable,
+  state : Int,
+  action : Int,
+  value : Double,
+) -> Unit {
+  if state >= 0 &&
+    state < self.state_count &&
+    action >= 0 &&
+    action < self.action_count {
     self.values[state][action] = value
   }
 }
 
+///|
 fn QTable::best_action_index(self : QTable, state : Int) -> Int {
   let row = self.row(state)
   let mut best = 0
@@ -158,23 +182,34 @@ fn QTable::best_action_index(self : QTable, state : Int) -> Int {
   best
 }
 
+///|
 fn QTable::max_value(self : QTable, state : Int) -> Double {
   self.row(state)[self.best_action_index(state)]
 }
 
-fn QTable::update(self : QTable, state : Int, action : Int, target : Double, alpha : Double) -> Unit {
+///|
+fn QTable::update(
+  self : QTable,
+  state : Int,
+  action : Int,
+  target : Double,
+  alpha : Double,
+) -> Unit {
   let old = self.value(state, action)
   self.set_value(state, action, old + alpha * (target - old))
 }
 
+///|
 struct LcgRng {
   mut seed : Int
-} derive(Show)
+} derive(Debug)
 
+///|
 fn LcgRng::new(seed : Int) -> LcgRng {
   { seed: if seed <= 0 { 20260711 } else { seed } }
 }
 
+///|
 fn LcgRng::next_seed(self : LcgRng) -> Int {
   self.seed = (self.seed * 1103515245 + 12345) % 2147483647
   if self.seed < 0 {
@@ -183,6 +218,7 @@ fn LcgRng::next_seed(self : LcgRng) -> Int {
   self.seed
 }
 
+///|
 fn LcgRng::next_int(self : LcgRng, bound : Int) -> Int {
   if bound <= 1 {
     0
@@ -191,19 +227,26 @@ fn LcgRng::next_int(self : LcgRng, bound : Int) -> Int {
   }
 }
 
+///|
 fn LcgRng::next_double(self : LcgRng) -> Double {
   self.next_int(10000).to_double() / 10000.0
 }
 
+///|
 struct EpsilonGreedyPolicy {
   epsilon : Double
   rng : LcgRng
-} derive(Show)
+} derive(Debug)
 
-pub fn EpsilonGreedyPolicy::new(epsilon : Double, seed : Int) -> EpsilonGreedyPolicy {
+///|
+pub fn EpsilonGreedyPolicy::new(
+  epsilon : Double,
+  seed : Int,
+) -> EpsilonGreedyPolicy {
   { epsilon, rng: LcgRng::new(seed) }
 }
 
+///|
 fn EpsilonGreedyPolicy::choose_action(
   self : EpsilonGreedyPolicy,
   _state : Int,
@@ -228,33 +271,38 @@ fn EpsilonGreedyPolicy::choose_action(
   }
 }
 
-trait Environment {
-  reset(Self) -> Int
-  actions(Self) -> Array[Int]
-  state_space(Self) -> Array[Int]
-  step(Self, Int) -> Transition
-  render(Self) -> String
+///|
+pub trait Environment {
+  fn reset(Self) -> Int
+  fn actions(Self) -> Array[Int]
+  fn state_space(Self) -> Array[Int]
+  fn step(Self, Int) -> Transition
+  fn render(Self) -> String
 }
 
-trait Policy {
-  choose_action(Self, Int, Array[Int], Array[Double]) -> Int
+///|
+pub trait Policy {
+  fn choose_action(Self, Int, Array[Int], Array[Double]) -> Int
 }
 
-trait Agent {
-  reset_episode(Self) -> Unit
-  choose_action(Self, Int) -> Int
-  learn(Self, Transition, Int?) -> Unit
-  epsilon(Self) -> Double
-  q_report(Self, Int) -> String
+///|
+pub trait Agent {
+  fn reset_episode(Self) -> Unit
+  fn choose_action(Self, Int) -> Int
+  fn learn(Self, Transition, Int?) -> Unit
+  fn epsilon(Self) -> Double
+  fn q_report(Self, Int) -> String
 }
 
-trait Logger {
-  start_episode(Self, Int) -> Unit
-  step(Self, Int, Int, Int, Double, Int, Bool, Int) -> Unit
-  finish_episode(Self, EpisodeRecord) -> Unit
-  finish(Self, TrainingReport) -> Unit
+///|
+pub trait Logger {
+  fn start_episode(Self, Int) -> Unit
+  fn step(Self, Int, Int, Int, Double, Int, Bool, Int) -> Unit
+  fn finish_episode(Self, EpisodeRecord) -> Unit
+  fn finish(Self, TrainingReport) -> Unit
 }
 
+///|
 struct GridWorldEnv {
   width : Int
   height : Int
@@ -264,9 +312,10 @@ struct GridWorldEnv {
   goal_y : Int
   mut x : Int
   mut y : Int
-  mut last_stage : EpisodeStage
-} derive(Show)
+  mut _last_stage : EpisodeStage
+} derive(Debug)
 
+///|
 pub fn GridWorldEnv::new() -> GridWorldEnv {
   {
     width: 4,
@@ -277,28 +326,33 @@ pub fn GridWorldEnv::new() -> GridWorldEnv {
     goal_y: 3,
     x: 0,
     y: 0,
-    last_stage: Running,
+    _last_stage: Running,
   }
 }
 
+///|
 fn GridWorldEnv::encode(self : GridWorldEnv, x : Int, y : Int) -> Int {
   y * self.width + x
 }
 
+///|
 fn GridWorldEnv::decode_x(self : GridWorldEnv, state : Int) -> Int {
   state % self.width
 }
 
+///|
 fn GridWorldEnv::decode_y(self : GridWorldEnv, state : Int) -> Int {
   state / self.width
 }
 
+///|
 fn GridWorldEnv::state_label(self : GridWorldEnv, state : Int) -> String {
   let x = self.decode_x(state)
   let y = self.decode_y(state)
   "\{x},\{y}"
 }
 
+///|
 fn GridWorldEnv::action_name(action : Int) -> String {
   match action {
     0 => "up"
@@ -309,17 +363,20 @@ fn GridWorldEnv::action_name(action : Int) -> String {
   }
 }
 
+///|
 fn GridWorldEnv::reset(self : GridWorldEnv) -> Int {
   self.x = self.start_x
   self.y = self.start_y
-  self.last_stage = Running
+  self._last_stage = Running
   self.encode(self.x, self.y)
 }
 
-pub fn GridWorldEnv::actions(self : GridWorldEnv) -> Array[Int] {
+///|
+pub fn GridWorldEnv::actions(_self : GridWorldEnv) -> Array[Int] {
   [0, 1, 2, 3]
 }
 
+///|
 pub fn GridWorldEnv::state_space(self : GridWorldEnv) -> Array[Int] {
   let size = self.width * self.height
   let states = Array::make(size, 0)
@@ -331,10 +388,12 @@ pub fn GridWorldEnv::state_space(self : GridWorldEnv) -> Array[Int] {
   states
 }
 
+///|
 fn GridWorldEnv::is_goal(self : GridWorldEnv) -> Bool {
   self.x == self.goal_x && self.y == self.goal_y
 }
 
+///|
 pub fn GridWorldEnv::step(self : GridWorldEnv, action : Int) -> Transition {
   let from_state = self.encode(self.x, self.y)
   let mut next_x = self.x
@@ -349,11 +408,19 @@ pub fn GridWorldEnv::step(self : GridWorldEnv, action : Int) -> Transition {
   self.x = next_x
   self.y = next_y
   let done = self.is_goal()
-  self.last_stage = if done { Finished } else { Running }
+  self._last_stage = if done { Finished } else { Running }
   let reward = if done { 1.0 } else { -0.04 }
-  Transition::{ state: from_state, action, reward, next_state: self.encode(self.x, self.y), done, step: 0 }
+  Transition::{
+    state: from_state,
+    action,
+    reward,
+    next_state: self.encode(self.x, self.y),
+    done,
+    step: 0,
+  }
 }
 
+///|
 pub fn GridWorldEnv::render(self : GridWorldEnv) -> String {
   let mut buffer = "GridWorld \{self.width}x\{self.height}\n"
   let mut y = 0
@@ -380,13 +447,15 @@ pub fn GridWorldEnv::render(self : GridWorldEnv) -> String {
   buffer
 }
 
+///|
 struct QLearningAgent {
   table : QTable
   policy : EpsilonGreedyPolicy
   alpha : Double
   gamma : Double
-} derive(Show)
+} derive(Debug)
 
+///|
 pub fn QLearningAgent::new(
   states : Array[Int],
   actions : Array[Int],
@@ -394,18 +463,30 @@ pub fn QLearningAgent::new(
   alpha : Double,
   gamma : Double,
 ) -> QLearningAgent {
-  { table: QTable::new(states.length(), actions.length()), policy, alpha, gamma }
+  {
+    table: QTable::new(states.length(), actions.length()),
+    policy,
+    alpha,
+    gamma,
+  }
 }
 
-fn QLearningAgent::reset_episode(self : QLearningAgent) -> Unit {
+///|
+pub fn QLearningAgent::reset_episode(_self : QLearningAgent) -> Unit {
   ()
 }
 
+///|
 pub fn QLearningAgent::choose_action(self : QLearningAgent, state : Int) -> Int {
   self.policy.choose_action(state, [0, 1, 2, 3], self.table.row(state))
 }
 
-pub fn QLearningAgent::learn(self : QLearningAgent, transition : Transition, next_action : Int?) -> Unit {
+///|
+pub fn QLearningAgent::learn(
+  self : QLearningAgent,
+  transition : Transition,
+  _next_action : Int?,
+) -> Unit {
   let target = if transition.done {
     transition.reward
   } else {
@@ -414,30 +495,45 @@ pub fn QLearningAgent::learn(self : QLearningAgent, transition : Transition, nex
   self.table.update(transition.state, transition.action, target, self.alpha)
 }
 
+///|
 pub fn QLearningAgent::epsilon(self : QLearningAgent) -> Double {
   self.policy.epsilon
 }
 
+///|
 pub fn QLearningAgent::q_report(self : QLearningAgent, state : Int) -> String {
   let best = self.table.best_action_index(state)
   "\{state} -> \{best}"
 }
 
-pub fn QLearningAgent::q_value(self : QLearningAgent, state : Int, action : Int) -> Double {
+///|
+pub fn QLearningAgent::q_value(
+  self : QLearningAgent,
+  state : Int,
+  action : Int,
+) -> Double {
   self.table.value(state, action)
 }
 
-pub fn QLearningAgent::set_q_value(self : QLearningAgent, state : Int, action : Int, value : Double) -> Unit {
+///|
+pub fn QLearningAgent::set_q_value(
+  self : QLearningAgent,
+  state : Int,
+  action : Int,
+  value : Double,
+) -> Unit {
   self.table.set_value(state, action, value)
 }
 
+///|
 struct SARSAAgent {
   table : QTable
   policy : EpsilonGreedyPolicy
   alpha : Double
   gamma : Double
-} derive(Show)
+} derive(Debug)
 
+///|
 pub fn SARSAAgent::new(
   states : Array[Int],
   actions : Array[Int],
@@ -445,18 +541,30 @@ pub fn SARSAAgent::new(
   alpha : Double,
   gamma : Double,
 ) -> SARSAAgent {
-  { table: QTable::new(states.length(), actions.length()), policy, alpha, gamma }
+  {
+    table: QTable::new(states.length(), actions.length()),
+    policy,
+    alpha,
+    gamma,
+  }
 }
 
-fn SARSAAgent::reset_episode(self : SARSAAgent) -> Unit {
+///|
+pub fn SARSAAgent::reset_episode(_self : SARSAAgent) -> Unit {
   ()
 }
 
+///|
 pub fn SARSAAgent::choose_action(self : SARSAAgent, state : Int) -> Int {
   self.policy.choose_action(state, [0, 1, 2, 3], self.table.row(state))
 }
 
-pub fn SARSAAgent::learn(self : SARSAAgent, transition : Transition, next_action : Int?) -> Unit {
+///|
+pub fn SARSAAgent::learn(
+  self : SARSAAgent,
+  transition : Transition,
+  next_action : Int?,
+) -> Unit {
   let next_value = match next_action {
     Some(action) => self.table.value(transition.next_state, action)
     None => 0.0
@@ -469,27 +577,33 @@ pub fn SARSAAgent::learn(self : SARSAAgent, transition : Transition, next_action
   self.table.update(transition.state, transition.action, target, self.alpha)
 }
 
+///|
 pub fn SARSAAgent::epsilon(self : SARSAAgent) -> Double {
   self.policy.epsilon
 }
 
+///|
 pub fn SARSAAgent::q_report(self : SARSAAgent, state : Int) -> String {
   let best = self.table.best_action_index(state)
   "\{state} -> \{best}"
 }
 
+///|
 struct ConsoleLogger {
   prefix : String
-} derive(Show)
+} derive(Debug)
 
+///|
 fn ConsoleLogger::new(prefix : String) -> ConsoleLogger {
-  { prefix: prefix }
+  { prefix, }
 }
 
+///|
 fn ConsoleLogger::start_episode(self : ConsoleLogger, episode : Int) -> Unit {
   println("\{self.prefix} episode \{episode} start")
 }
 
+///|
 fn ConsoleLogger::step(
   self : ConsoleLogger,
   episode : Int,
@@ -507,26 +621,34 @@ fn ConsoleLogger::step(
   }
 }
 
-fn ConsoleLogger::finish_episode(self : ConsoleLogger, record : EpisodeRecord) -> Unit {
+///|
+fn ConsoleLogger::finish_episode(
+  self : ConsoleLogger,
+  record : EpisodeRecord,
+) -> Unit {
   println(
     "\{self.prefix} episode \{record.episode}: reward=\{record.reward}, steps=\{record.steps}, goal=\{record.goal_reached}",
   )
 }
 
+///|
 fn ConsoleLogger::finish(self : ConsoleLogger, report : TrainingReport) -> Unit {
   println("\{self.prefix} training finished")
   println(report.summary())
 }
 
+///|
 struct Trainer {
   episodes : Int
   max_steps : Int
-} derive(Show)
+} derive(Debug)
 
+///|
 pub fn Trainer::new(episodes : Int, max_steps : Int) -> Trainer {
   { episodes, max_steps }
 }
 
+///|
 pub fn Trainer::train_q_learning(
   self : Trainer,
   env : GridWorldEnv,
@@ -556,7 +678,15 @@ pub fn Trainer::train_q_learning(
       let next_state = transition.next_state
       let done_flag = transition.done
       total_reward = total_reward + transition.reward
-      logger.step(episode + 1, transition.state, transition.action, transition.reward, next_state, done_flag, transition.step)
+      logger.step(
+        episode + 1,
+        transition.state,
+        transition.action,
+        transition.reward,
+        next_state,
+        done_flag,
+        transition.step,
+      )
       agent.learn(transition, None)
       state = next_state
       done = done_flag
@@ -567,7 +697,13 @@ pub fn Trainer::train_q_learning(
     }
     report.rewards[episode] = total_reward
     report.steps[episode] = step_count
-    logger.finish_episode(EpisodeRecord::{ episode: episode + 1, steps: step_count, reward: total_reward, goal_reached: done, final_state: state })
+    logger.finish_episode(EpisodeRecord::{
+      episode: episode + 1,
+      steps: step_count,
+      reward: total_reward,
+      goal_reached: done,
+      final_state: state,
+    })
     episode = episode + 1
   }
   report.final_epsilon = agent.epsilon()
@@ -575,6 +711,7 @@ pub fn Trainer::train_q_learning(
   report
 }
 
+///|
 pub fn Trainer::train_sarsa(
   self : Trainer,
   env : GridWorldEnv,
@@ -609,7 +746,15 @@ pub fn Trainer::train_sarsa(
       } else {
         Some(agent.choose_action(next_state))
       }
-      logger.step(episode + 1, transition.state, transition.action, transition.reward, next_state, done_flag, transition.step)
+      logger.step(
+        episode + 1,
+        transition.state,
+        transition.action,
+        transition.reward,
+        next_state,
+        done_flag,
+        transition.step,
+      )
       agent.learn(transition, next_action)
       state = next_state
       done = done_flag
@@ -624,7 +769,13 @@ pub fn Trainer::train_sarsa(
     }
     report.rewards[episode] = total_reward
     report.steps[episode] = step_count
-    logger.finish_episode(EpisodeRecord::{ episode: episode + 1, steps: step_count, reward: total_reward, goal_reached: done, final_state: state })
+    logger.finish_episode(EpisodeRecord::{
+      episode: episode + 1,
+      steps: step_count,
+      reward: total_reward,
+      goal_reached: done,
+      final_state: state,
+    })
     episode = episode + 1
   }
   report.final_epsilon = agent.epsilon()
@@ -632,6 +783,7 @@ pub fn Trainer::train_sarsa(
   report
 }
 
+///|
 pub fn tutorial_blurb() -> String {
   "MoonRLLab combines finite environments, tabular control, and a small trainer so that new MoonBit contributors can inspect the whole learning loop in one place."
 }

@@ -1,3 +1,4 @@
+///|
 test "q-learning updates toward reward" {
   let states = [0, 1]
   let actions = [0, 1]
@@ -7,6 +8,7 @@ test "q-learning updates toward reward" {
   assert_eq(agent.q_value(0, 1), 0.5)
 }
 
+///|
 test "epsilon greedy keeps greedy choice when epsilon is zero" {
   let states = [0]
   let actions = [0, 1, 2]
@@ -18,6 +20,7 @@ test "epsilon greedy keeps greedy choice when epsilon is zero" {
   assert_eq(agent.choose_action(0), 1)
 }
 
+///|
 test "gridworld exposes a finite state space" {
   let env = GridWorldEnv::new()
   assert_eq(env.state_space().length(), 16)
