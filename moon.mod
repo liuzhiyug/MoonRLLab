@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "lzylzy78/moonrllab"
+name = "liuzhiyug/moonrllab"
 
 version = "0.1.0"
 
