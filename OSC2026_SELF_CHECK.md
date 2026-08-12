@@ -1,39 +1,38 @@
 # OSC2026 Self-Check
 
-Checked against the 2026 MoonBit challenge requirements and the competition guide.
+This is the local evidence report for final-acceptance preparation. It does not claim that remote GitHub, GitLink or mooncakes.io state has been verified until authorized publication.
 
-## Repository structure
+## Repository evidence
 
-- `README.md` explains the goal, scope, usage, and source notes.
-- `README.mbt.md` mirrors the project overview for MoonBit docs.
-- `LICENSE` is Apache-2.0.
+- `moon.mod` names the publishable module `liuzhiyug/moonrllab`, version `0.1.0`, license `Apache-2.0`, and the GitHub repository URL.
+- `README.md`, `README.mbt.md`, `SUBMISSION.md`, `SOURCE_NOTE.md`, `ARCHITECTURE.md` and `LICENSE` document usage, scope, provenance and redistribution terms.
 - `cmd/main/main.mbt` provides a runnable entry point.
-- `MoonRLLab.mbt` exposes the public top-level demo helpers.
-- `rl_types.mbt` contains the framework implementation.
-- `MoonRLLab_test.mbt` contains black-box tests.
+- `master` is the current local branch. The hosting-service default branch must be checked before the final submission.
+- Build artifacts under `_build/` are ignored by `.gitignore`.
 
-## Git history
+## Scope and completion
 
-- Default branch: `main`
-- Commit history is present locally and currently starts with:
-  - `chore: scaffold MoonRLLab project and docs`
-  - `feat: add tabular RL framework and demo`
+- Core interfaces: environment, policy, agent, logger and trainer.
+- Algorithms: Q-learning, SARSA, Expected SARSA, Monte Carlo and Double Q-learning.
+- Environments: GridWorld, CliffWalking, RandomWalk and multi-armed bandit.
+- Evaluation: stable statistics, schedules, replay, value iteration, policy evaluation, CSV/Markdown reporting and validation audits.
+- Boundary coverage includes invalid actions, empty/negative configuration, terminal transitions, replay capacity, clamped schedules and deterministic seeds.
+- Effective MoonBit source scale is above 3,000 lines including tests.
 
-## MoonBit source
+## Verification evidence
 
-- Main implementation is in MoonBit.
-- The project currently focuses on a compact tabular RL lab rather than a copied upstream port.
-- Source notes in the README state that this is newly authored work for the competition.
+- `moon version --all`: moonc `0.10.3`.
+- `moon check --deny-warn`: passes.
+- `moon test --deny-warn`: 12 tests passed.
+- `moon fmt`: completes successfully.
+- `moon info`: completes successfully and generated interfaces are locally reviewed.
+- `moon run cmd/main`: prints a training summary.
+- CI workflow runs normal and strict check/test plus format/API-drift checks.
 
-## Scope
+## Remaining remote checks
 
-- Unified interfaces are present for environment, policy, agent, logger, and trainer.
-- Built-in examples cover Q-learning, SARSA, epsilon-greedy action selection, and training reports.
-- The first release is intentionally small and can grow toward more environments, traces, and visualization.
-
-## Verification
-
-- `moon check` passes.
-- `moon test` passes.
-- `moon run cmd/main` prints a training summary.
-
+- Verify the latest CI run on the hosting service after the authorized push.
+- Verify the default branch contains the final commit and all new files.
+- Verify the package is visible and installable on mooncakes.io after authorized publication.
+- Verify GitHub/GitLink links point to the same final revision.
+- Remove any embedded remote credentials before publication; credentials must never be committed or pasted into reports.

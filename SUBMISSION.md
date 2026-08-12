@@ -7,17 +7,18 @@
 
 ## Highlights
 
-- One contributor only: 刘智宇
+- One contributor only: `liuzhiyug`
 - Default branch for delivery: `master`
 - Main language: MoonBit
-- Core scope: tabular reinforcement learning for discrete environments
+- Core scope: reproducible tabular reinforcement learning for discrete environments
+- Effective MoonBit source scale: above 3,000 lines including tests
 
 ## Checklist
 
-- repository structure is clear
-- README is present
+- repository structure and README are clear
 - license is Apache-2.0
-- commit history is non-trivial
-- MoonBit source is the main implementation
-- self-check notes are included
-
+- MoonBit CI runs check, test, strict warnings, formatting and public API checks
+- benchmarks use fixed seeds and bounded budgets
+- invalid-input and boundary tests are included
+- source notes disclose that no third-party implementation is vendored
+- final GitHub/GitLink/mooncakes.io state must be verified after authorized publication

@@ -23,3 +23,13 @@ jobs:
       - name: moon test
         run: |
           moon test
+      - name: strict warnings
+        run: |
+          moon check --deny-warn
+          moon test --deny-warn
+      - name: format and public API
+        run: |
+          moon fmt
+          git diff --exit-code
+          moon info
+          git diff --exit-code

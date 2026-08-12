@@ -1,0 +1,585 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "liuzhiyug/moonrllab"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn acceptance_evidence() -> Array[String]
+
+pub fn action_map_text(Array[Int]) -> String
+
+pub fn all_environment_audits() -> String
+
+pub fn audit_score(EnvironmentAudit, Int, Int) -> ScorecardSet
+
+pub fn benchmark_catalog() -> String
+
+pub fn benchmark_manifest() -> String
+
+pub fn boundary_probe() -> String
+
+pub fn clipped(Double, Double, Double) -> Double
+
+pub fn compact_result_line(BenchmarkResult) -> String
+
+pub fn compact_results(Array[BenchmarkResult]) -> String
+
+pub fn compare_results_table(Array[BenchmarkResult]) -> ReportTable
+
+pub fn compare_training_reports(TrainingReport, TrainingReport) -> String
+
+pub fn confidence_interval(Array[Double]) -> String
+
+pub fn csv_escape(String) -> String
+
+pub fn discounted_return(Array[Double], Double) -> Double
+
+pub fn discounted_returns(Array[Double], Double) -> Array[Double]
+
+pub fn evaluate_grid_policy(Array[Int], Int, Double, Int) -> PolicyEvaluation
+
+pub fn full_benchmark_report(EvaluationConfig) -> String
+
+pub fn greedy_action_map(QLearningAgent, Int) -> Array[Int]
+
+pub fn gridworld_value_iteration(Int, Int, Int, Double, Double, Int) -> ValueIterationResult
+
+pub fn join_lines(Array[String]) -> String
+
+pub fn linear_interpolate(Double, Double, Double) -> Double
+
+pub fn markdown_escape(String) -> String
+
+pub fn merge_reward_series(Array[Double], Array[Double]) -> Array[Double]
+
+pub fn moving_average(Array[Double], Int) -> Array[Double]
+
+pub fn normalize_returns(Array[Double]) -> Array[Double]
+
+pub fn percentile(Array[Double], Double) -> Double
+
+pub fn performance_budget(Int, Int) -> Int
+
+pub fn policy_agreement(ValueIterationResult, ValueIterationResult) -> Double
+
+pub fn policy_histogram(Array[Int], Int) -> Array[Int]
+
+pub fn project_name() -> String
+
+pub fn project_self_check(EvaluationConfig) -> String
+
+pub fn q_table_snapshot(QLearningAgent, Int, Int) -> String
+
+pub fn quality_text(BenchmarkResult) -> String
+
+pub fn regret(Double, Array[Double]) -> Array[Double]
+
+pub fn release_checklist_text() -> String
+
+pub fn report_contract() -> String
+
+pub fn report_footer() -> String
+
+pub fn report_header(String, Int) -> String
+
+pub fn report_quality(BenchmarkResult) -> ScorecardSet
+
+pub fn report_sections(EvaluationConfig) -> Array[String]
+
+pub fn report_sections_text(EvaluationConfig) -> String
+
+pub fn report_table_from_result(BenchmarkResult) -> ReportTable
+
+pub fn report_table_from_stats(BenchmarkResult) -> ReportTable
+
+pub fn report_version() -> String
+
+pub fn reproducibility_signature(EvaluationConfig) -> String
+
+pub fn result_digest(BenchmarkResult) -> String
+
+pub fn result_episode_ids(BenchmarkResult) -> Array[Int]
+
+pub fn result_has_consistent_ids(BenchmarkResult) -> Bool
+
+pub fn result_has_learning_signal(BenchmarkResult) -> Bool
+
+pub fn result_health(BenchmarkResult) -> String
+
+pub fn result_is_nontrivial(BenchmarkResult) -> Bool
+
+pub fn result_range(BenchmarkResult) -> String
+
+pub fn reward_ceiling(Array[Double]) -> Double
+
+pub fn reward_floor(Array[Double]) -> Double
+
+pub fn risk_flags() -> Array[String]
+
+pub fn run_bandit_benchmark(EvaluationConfig) -> ExperimentSummary
+
+pub fn run_cliff_benchmark(Int, Int) -> ExperimentSummary
+
+pub fn run_demo() -> TrainingReport
+
+pub fn run_gridworld_benchmark(Int, Int) -> ExperimentSummary
+
+pub fn run_random_walk_benchmark(EvaluationConfig) -> ExperimentSummary
+
+pub fn run_sarsa_demo() -> TrainingReport
+
+pub fn run_standard_reports(EvaluationConfig) -> String
+
+pub fn seed_sensitivity(Int) -> String
+
+pub fn solved_prefix(Array[Bool]) -> Int
+
+pub fn source_scale_estimate() -> String
+
+pub fn stable_mean(Array[Double]) -> Double
+
+pub fn stable_sum(Array[Double]) -> Double
+
+pub fn standard_benchmarks() -> Array[BenchmarkCase]
+
+pub fn suite_summary(EvaluationConfig) -> String
+
+pub fn table_is_empty(ReportTable) -> Bool
+
+pub fn table_last_row(ReportTable) -> Array[String]?
+
+pub fn table_preview(ReportTable, Int) -> String
+
+pub fn trend(Array[Double]) -> Double
+
+pub fn tutorial_blurb() -> String
+
+pub fn validate_cliff(CliffWalkingEnv) -> ValidationReport
+
+pub fn validate_config(EvaluationConfig) -> ValidationReport
+
+pub fn validate_gridworld(GridWorldEnv) -> ValidationReport
+
+pub fn validate_planner(ValueIterationResult) -> ValidationReport
+
+pub fn validate_policy(Array[Int], Int) -> ValidationReport
+
+pub fn validate_replay(ReplayBuffer) -> ValidationReport
+
+pub fn validate_result(BenchmarkResult) -> ValidationReport
+
+pub fn validate_schedule(EpsilonSchedule, Int) -> ValidationReport
+
+pub fn value_error(Array[Double], Array[Double]) -> Double
+
+// Errors
+
+// Types and methods
+pub struct BanditEnv {
+  arms : Array[Double]
+  rng : LcgRng
+  mut pulls : Array[Int]
+  mut total_reward : Double
+} derive(@debug.Debug)
+pub fn BanditEnv::actions(Self) -> Array[Int]
+pub fn BanditEnv::arm_count(Self) -> Int
+pub fn BanditEnv::average_reward(Self) -> Double
+pub fn BanditEnv::best_arm(Self) -> Int
+pub fn BanditEnv::new(Array[Double], Int) -> Self
+pub fn BanditEnv::pull_count(Self, Int) -> Int
+pub fn BanditEnv::render(Self) -> String
+pub fn BanditEnv::reset(Self) -> Int
+pub fn BanditEnv::state_space(Self) -> Array[Int]
+pub fn BanditEnv::step(Self, Int) -> Transition
+
+pub struct BanditPolicy {
+  values : Array[Double]
+  counts : Array[Int]
+  schedule : EpsilonSchedule
+  rng : LcgRng
+} derive(@debug.Debug)
+pub fn BanditPolicy::choose(Self, Int) -> Int
+pub fn BanditPolicy::counts(Self) -> Array[Int]
+pub fn BanditPolicy::estimate(Self, Int) -> Double
+pub fn BanditPolicy::new(Int, EpsilonSchedule, Int) -> Self
+pub fn BanditPolicy::observe(Self, Int, Double) -> Unit
+
+pub struct BenchmarkCase {
+  name : String
+  description : String
+  expected_states : Int
+  expected_actions : Int
+  max_steps : Int
+} derive(Eq, @debug.Debug)
+pub fn BenchmarkCase::bandit() -> Self
+pub fn BenchmarkCase::cliff_walking() -> Self
+pub fn BenchmarkCase::gridworld() -> Self
+pub fn BenchmarkCase::random_walk() -> Self
+
+pub struct BenchmarkResult {
+  name : String
+  seed : Int
+  episodes : Int
+  rewards : Array[Double]
+  steps : Array[Int]
+  solved : Array[Bool]
+} derive(@debug.Debug)
+pub fn BenchmarkResult::new(String, Int, Int) -> Self
+pub fn BenchmarkResult::record(Self, Int, Double, Int, Bool) -> Unit
+pub fn BenchmarkResult::reward_stats(Self) -> RunningStats
+pub fn BenchmarkResult::solve_rate(Self) -> Double
+pub fn BenchmarkResult::solved_count(Self) -> Int
+pub fn BenchmarkResult::step_stats(Self) -> RunningStats
+pub fn BenchmarkResult::summary(Self) -> String
+pub fn BenchmarkResult::tail_average(Self, Int) -> Double
+pub fn BenchmarkResult::to_csv(Self) -> String
+
+pub struct CliffWalkingEnv {
+  width : Int
+  height : Int
+  start_x : Int
+  start_y : Int
+  goal_x : Int
+  goal_y : Int
+  mut x : Int
+  mut y : Int
+  mut _last_stage : EpisodeStage
+} derive(@debug.Debug)
+pub fn CliffWalkingEnv::actions(Self) -> Array[Int]
+pub fn CliffWalkingEnv::new() -> Self
+pub fn CliffWalkingEnv::render(Self) -> String
+pub fn CliffWalkingEnv::reset(Self) -> Int
+pub fn CliffWalkingEnv::state_space(Self) -> Array[Int]
+pub fn CliffWalkingEnv::step(Self, Int) -> Transition
+
+type ConsoleLogger derive(@debug.Debug)
+
+pub struct DoubleQLearningAgent {
+  left : QTable
+  right : QTable
+  policy : EpsilonGreedyPolicy
+  alpha : Double
+  gamma : Double
+  mut updates : Int
+} derive(@debug.Debug)
+pub fn DoubleQLearningAgent::best_action(Self, Int) -> Int
+pub fn DoubleQLearningAgent::choose_action(Self, Int) -> Int
+pub fn DoubleQLearningAgent::learn(Self, Transition, Bool) -> Unit
+pub fn DoubleQLearningAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
+pub fn DoubleQLearningAgent::update_count(Self) -> Int
+pub fn DoubleQLearningAgent::value(Self, Int, Int) -> Double
+
+pub struct EnvironmentAudit {
+  states : Int
+  actions : Int
+  reset_state : Int
+  invalid_action_state : Int
+  render_nonempty : Bool
+} derive(Eq, @debug.Debug)
+pub fn EnvironmentAudit::bandit() -> Self
+pub fn EnvironmentAudit::cliff() -> Self
+pub fn EnvironmentAudit::gridworld() -> Self
+pub fn EnvironmentAudit::random_walk() -> Self
+
+pub struct EpisodeAccumulator {
+  mut reward : Double
+  mut steps : Int
+  mut last_state : Int
+  mut solved : Bool
+} derive(@debug.Debug)
+pub fn EpisodeAccumulator::finish(Self, Int) -> EvaluationPoint
+pub fn EpisodeAccumulator::new() -> Self
+pub fn EpisodeAccumulator::observe(Self, Transition) -> Unit
+
+type EpisodeRecord derive(Eq, @debug.Debug)
+
+type EpisodeStage derive(Eq, @debug.Debug)
+
+pub struct EpisodeTrace {
+  transitions : Array[Transition]
+} derive(@debug.Debug)
+pub fn EpisodeTrace::length(Self) -> Int
+pub fn EpisodeTrace::new() -> Self
+pub fn EpisodeTrace::push(Self, Transition) -> Unit
+pub fn EpisodeTrace::returns(Self, Double) -> Array[Double]
+pub fn EpisodeTrace::total_reward(Self) -> Double
+
+type EpsilonGreedyPolicy derive(@debug.Debug)
+pub fn EpsilonGreedyPolicy::new(Double, Int) -> Self
+
+pub struct EpsilonSchedule {
+  start : Double
+  end : Double
+  decay_steps : Int
+} derive(Eq, @debug.Debug)
+pub fn EpsilonSchedule::new(Double, Double, Int) -> Self
+pub fn EpsilonSchedule::value(Self, Int) -> Double
+pub fn EpsilonSchedule::values(Self, Int) -> Array[Double]
+
+pub struct EvaluationConfig {
+  episodes : Int
+  max_steps : Int
+  seed : Int
+  report_window : Int
+} derive(Eq, @debug.Debug)
+pub fn EvaluationConfig::new(Int, Int, Int) -> Self
+pub fn EvaluationConfig::with_window(Self, Int) -> Self
+
+pub struct EvaluationPoint {
+  episode : Int
+  reward : Double
+  steps : Int
+  solved : Bool
+} derive(Eq, @debug.Debug)
+
+pub struct ExpectedSARSAAgent {
+  table : QTable
+  policy : EpsilonGreedyPolicy
+  alpha : Double
+  gamma : Double
+} derive(@debug.Debug)
+pub fn ExpectedSARSAAgent::choose_action(Self, Int) -> Int
+pub fn ExpectedSARSAAgent::epsilon(Self) -> Double
+pub fn ExpectedSARSAAgent::learn(Self, Transition, Int?) -> Unit
+pub fn ExpectedSARSAAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
+pub fn ExpectedSARSAAgent::q_report(Self, Int) -> String
+pub fn ExpectedSARSAAgent::reset_episode(Self) -> Unit
+
+pub struct ExperimentSummary {
+  name : String
+  result : BenchmarkResult
+  notes : String
+} derive(@debug.Debug)
+pub fn ExperimentSummary::report(Self) -> String
+
+type GridWorldEnv derive(@debug.Debug)
+pub fn GridWorldEnv::actions(Self) -> Array[Int]
+pub fn GridWorldEnv::new() -> Self
+pub fn GridWorldEnv::render(Self) -> String
+pub fn GridWorldEnv::state_space(Self) -> Array[Int]
+pub fn GridWorldEnv::step(Self, Int) -> Transition
+
+type LcgRng derive(@debug.Debug)
+
+pub struct LearningRateSchedule {
+  initial : Double
+  minimum : Double
+  decay : Double
+} derive(Eq, @debug.Debug)
+pub fn LearningRateSchedule::new(Double, Double, Double) -> Self
+pub fn LearningRateSchedule::value(Self, Int) -> Double
+
+pub struct MonteCarloAgent {
+  table : QTable
+  policy : EpsilonGreedyPolicy
+  alpha : Double
+  gamma : Double
+  visits : Array[Int]
+} derive(@debug.Debug)
+pub fn MonteCarloAgent::choose_action(Self, Int) -> Int
+pub fn MonteCarloAgent::learn_episode(Self, EpisodeTrace) -> Unit
+pub fn MonteCarloAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
+pub fn MonteCarloAgent::q_value(Self, Int, Int) -> Double
+pub fn MonteCarloAgent::visit_count(Self, Int, Int) -> Int
+
+pub struct PolicyEvaluation {
+  values : Array[Double]
+  residual : Double
+  iterations : Int
+  stable : Bool
+} derive(@debug.Debug)
+pub fn PolicyEvaluation::value(Self, Int) -> Double
+
+type QLearningAgent derive(@debug.Debug)
+pub fn QLearningAgent::choose_action(Self, Int) -> Int
+pub fn QLearningAgent::epsilon(Self) -> Double
+pub fn QLearningAgent::learn(Self, Transition, Int?) -> Unit
+pub fn QLearningAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
+pub fn QLearningAgent::q_report(Self, Int) -> String
+pub fn QLearningAgent::q_value(Self, Int, Int) -> Double
+pub fn QLearningAgent::reset_episode(Self) -> Unit
+pub fn QLearningAgent::set_q_value(Self, Int, Int, Double) -> Unit
+
+type QTable derive(@debug.Debug)
+
+pub struct RandomWalkEnv {
+  width : Int
+  start : Int
+  left_terminal : Int
+  right_terminal : Int
+  mut position : Int
+  rng : LcgRng
+} derive(@debug.Debug)
+pub fn RandomWalkEnv::actions(Self) -> Array[Int]
+pub fn RandomWalkEnv::new(Int, Int) -> Self
+pub fn RandomWalkEnv::render(Self) -> String
+pub fn RandomWalkEnv::reset(Self) -> Int
+pub fn RandomWalkEnv::state_space(Self) -> Array[Int]
+pub fn RandomWalkEnv::step(Self, Int) -> Transition
+
+pub struct ReplayBuffer {
+  capacity : Int
+  items : Array[ReplayItem]
+  mut cursor : Int
+} derive(@debug.Debug)
+pub fn ReplayBuffer::at(Self, Int) -> ReplayItem?
+pub fn ReplayBuffer::is_full(Self) -> Bool
+pub fn ReplayBuffer::length(Self) -> Int
+pub fn ReplayBuffer::mean_reward(Self) -> Double
+pub fn ReplayBuffer::new(Int) -> Self
+pub fn ReplayBuffer::priorities(Self) -> Array[Double]
+pub fn ReplayBuffer::push(Self, Transition, Double) -> Unit
+
+pub struct ReplayItem {
+  transition : Transition
+  priority : Double
+} derive(@debug.Debug)
+
+pub struct ReportTable {
+  headers : Array[String]
+  rows : Array[Array[String]]
+} derive(@debug.Debug)
+pub fn ReportTable::add_row(Self, Array[String]) -> Unit
+pub fn ReportTable::column_count(Self) -> Int
+pub fn ReportTable::new(Array[String]) -> Self
+pub fn ReportTable::row_count(Self) -> Int
+pub fn ReportTable::to_csv(Self) -> String
+pub fn ReportTable::to_markdown(Self) -> String
+pub fn ReportTable::valid_shape(Self) -> Bool
+
+pub struct RunningStats {
+  mut count : Int
+  mut mean : Double
+  mut m2 : Double
+  mut minimum : Double
+  mut maximum : Double
+} derive(@debug.Debug)
+pub fn RunningStats::average(Self) -> Double
+pub fn RunningStats::new() -> Self
+pub fn RunningStats::push(Self, Double) -> Unit
+pub fn RunningStats::standard_error(Self) -> Double
+pub fn RunningStats::summary(Self) -> String
+pub fn RunningStats::variance(Self) -> Double
+
+type SARSAAgent derive(@debug.Debug)
+pub fn SARSAAgent::choose_action(Self, Int) -> Int
+pub fn SARSAAgent::epsilon(Self) -> Double
+pub fn SARSAAgent::learn(Self, Transition, Int?) -> Unit
+pub fn SARSAAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
+pub fn SARSAAgent::q_report(Self, Int) -> String
+pub fn SARSAAgent::reset_episode(Self) -> Unit
+
+pub struct Scorecard {
+  name : String
+  expected : Double
+  observed : Double
+  tolerance : Double
+} derive(Eq, @debug.Debug)
+pub fn Scorecard::error(Self) -> Double
+pub fn Scorecard::new(String, Double, Double, Double) -> Self
+pub fn Scorecard::passed(Self) -> Bool
+pub fn Scorecard::text(Self) -> String
+
+pub struct ScorecardSet {
+  items : Array[Scorecard]
+} derive(@debug.Debug)
+pub fn ScorecardSet::add(Self, Scorecard) -> Unit
+pub fn ScorecardSet::failed_count(Self) -> Int
+pub fn ScorecardSet::new() -> Self
+pub fn ScorecardSet::passed(Self) -> Bool
+pub fn ScorecardSet::to_text(Self) -> String
+
+pub struct SeedBank {
+  seeds : Array[Int]
+} derive(Eq, @debug.Debug)
+pub fn SeedBank::at(Self, Int) -> Int?
+pub fn SeedBank::csv(Self) -> String
+pub fn SeedBank::distinct(Self) -> Bool
+pub fn SeedBank::length(Self) -> Int
+pub fn SeedBank::new(Int, Int) -> Self
+
+type Trainer derive(@debug.Debug)
+pub fn Trainer::new(Int, Int) -> Self
+pub fn Trainer::train_q_learning(Self, GridWorldEnv, QLearningAgent, ConsoleLogger) -> TrainingReport
+pub fn Trainer::train_sarsa(Self, GridWorldEnv, SARSAAgent, ConsoleLogger) -> TrainingReport
+
+type TrainingReport derive(@debug.Debug)
+pub fn TrainingReport::compact_line(Self) -> String
+
+type Transition derive(Eq, @debug.Debug)
+pub fn Transition::action(Self) -> Int
+pub fn Transition::done(Self) -> Bool
+pub fn Transition::new(Int, Int, Double, Int, Bool, Int) -> Self
+pub fn Transition::next_state(Self) -> Int
+pub fn Transition::reward(Self) -> Double
+pub fn Transition::state(Self) -> Int
+pub fn Transition::step_index(Self) -> Int
+
+pub struct ValidationFinding {
+  rule : String
+  severity : ValidationSeverity
+  message : String
+} derive(Eq, @debug.Debug)
+
+pub struct ValidationReport {
+  findings : Array[ValidationFinding]
+  mut passed : Int
+  mut notices : Int
+  mut failures : Int
+} derive(@debug.Debug)
+pub fn ValidationReport::add(Self, ValidationFinding) -> Unit
+pub fn ValidationReport::finding_count(Self) -> Int
+pub fn ValidationReport::new() -> Self
+pub fn ValidationReport::ok(Self) -> Bool
+pub fn ValidationReport::summary(Self) -> String
+pub fn ValidationReport::to_text(Self) -> String
+
+pub enum ValidationSeverity {
+  Pass
+  Notice
+  Failure
+} derive(Eq, @debug.Debug)
+
+pub struct ValueIterationResult {
+  values : Array[Double]
+  policy : Array[Int]
+  iterations : Int
+  converged : Bool
+  residual : Double
+} derive(@debug.Debug)
+pub fn ValueIterationResult::action(Self, Int) -> Int
+pub fn ValueIterationResult::greedy_path(Self, Int, Int, Int) -> Array[Int]
+pub fn ValueIterationResult::value(Self, Int) -> Double
+
+// Type aliases
+
+// Traits
+pub trait Agent {
+  fn reset_episode(Self) -> Unit
+  fn choose_action(Self, Int) -> Int
+  fn learn(Self, Transition, Int?) -> Unit
+  fn epsilon(Self) -> Double
+  fn q_report(Self, Int) -> String
+}
+
+pub trait Environment {
+  fn reset(Self) -> Int
+  fn actions(Self) -> Array[Int]
+  fn state_space(Self) -> Array[Int]
+  fn step(Self, Int) -> Transition
+  fn render(Self) -> String
+}
+
+pub trait Logger {
+  fn start_episode(Self, Int) -> Unit
+  fn step(Self, Int, Int, Int, Double, Int, Bool, Int) -> Unit
+  fn finish_episode(Self, EpisodeRecord) -> Unit
+  fn finish(Self, TrainingReport) -> Unit
+}
+
+pub trait Policy {
+  fn choose_action(Self, Int, Array[Int], Array[Double]) -> Int
+}
+

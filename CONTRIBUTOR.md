@@ -1,7 +1,5 @@
 # Contributor
 
-- 刘智宇
-- 2579597201@qq.com
+- liuzhiyug
 
-This repository is prepared so the submitted history stays under one real contributor identity.
-
+This repository is prepared so the submitted history stays under one real contributor identity. Verify the official applicant identity and hosting accounts before publication.
