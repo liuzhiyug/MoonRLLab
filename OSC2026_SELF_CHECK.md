@@ -4,7 +4,7 @@ This is the local evidence report for final-acceptance preparation. It does not 
 
 ## Repository evidence
 
-- `moon.mod` names the publishable module `liuzhiyug/moonrllab`, version `0.1.0`, license `Apache-2.0`, and the GitHub repository URL.
+- `moon.mod` names the publishable module `liuzhiyug/moonrllab`, version `0.1.1`, license `Apache-2.0`, and the GitHub repository URL.
 - `README.md`, `README.mbt.md`, `SUBMISSION.md`, `SOURCE_NOTE.md`, `ARCHITECTURE.md` and `LICENSE` document usage, scope, provenance and redistribution terms.
 - `cmd/main/main.mbt` provides a runnable entry point.
 - `master` is the current local branch. The hosting-service default branch must be checked before the final submission.
@@ -29,12 +29,12 @@ This is the local evidence report for final-acceptance preparation. It does not 
 - `moon fmt`: completes successfully.
 - `moon info`: completes successfully and generated interfaces are locally reviewed.
 - `moon run cmd/main`: prints a training summary.
-- CI workflow runs normal and strict check/test plus format/API-drift checks.
+- GitHub Actions run `all-target` check/build/test, focused Wasm check/test, the library example and format/API generation; the latest run for `db07454` passed.
+- `moon publish` for `liuzhiyug/moonrllab@0.1.1` returned HTTP 200 after package validation.
 
 ## Remaining remote checks
 
-- Verify the latest CI run on the hosting service after the authorized push.
-- Verify the default branch contains the final commit and all new files.
-- Verify the package is visible and installable on mooncakes.io after authorized publication.
-- Verify GitHub/GitLink links point to the same final revision.
-- Remove any embedded remote credentials before publication; credentials must never be committed or pasted into reports.
+- GitHub `master` contains the final commit `db07454` and the latest Actions run is green.
+- GitLink `lzylzy78/MoonRLLab` still points to `489b3b5`; pushing was rejected by GitLink with `User permission denied for writing`. The GitLink owner/account must grant write access or perform the synchronization.
+- GitHub and GitLink therefore do not yet point to the same final revision; this is the only unresolved external submission-material item.
+- No embedded remote credentials remain in the local remotes or committed files.
