@@ -1,12 +1,13 @@
 # Run Note
 
-The current demo run uses the default 4x4 GridWorld environment.
+The main demo runs Q-learning on the 4x4 GridWorld. The reusable library
+example runs SARSA through the generic trainer with `MemoryLogger`:
 
-Observed behavior:
+```bash
+moon run cmd/main
+moon run examples/basic
+```
 
-- early episodes are exploratory and slower
-- the trainer quickly learns to reach the goal more often
-- the report prints average reward, recent reward, and goal hits
-
-The run output is intentionally human-readable for competition review.
-
+The benchmark helpers use fixed positive seeds and bounded episode budgets.
+For a compact reproducibility check, call `reproducibility_signature` with an
+`EvaluationConfig`; it should report `reproducible=true`.

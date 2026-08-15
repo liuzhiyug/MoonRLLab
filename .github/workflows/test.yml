@@ -18,15 +18,23 @@ jobs:
 
       - name: moon check
         run: |
-          moon check
+          moon check --target all
+
+      - name: moon build
+        run: |
+          moon build --target all
 
       - name: moon test
         run: |
-          moon test
+          moon test --target all
       - name: strict warnings
         run: |
           moon check --deny-warn
           moon test --deny-warn
+
+      - name: library example
+        run: |
+          moon run examples/basic
       - name: format and public API
         run: |
           moon fmt

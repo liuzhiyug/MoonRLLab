@@ -152,6 +152,16 @@ pub fn table_last_row(ReportTable) -> Array[String]?
 
 pub fn table_preview(ReportTable, Int) -> String
 
+pub fn train_cliff_qlearning_generic(Int, Int, Int) -> TrainingReport
+
+pub fn train_gridworld_expected_sarsa_generic(Int, Int, Int) -> TrainingReport
+
+pub fn train_gridworld_qlearning_generic(Int, Int, Int) -> TrainingReport
+
+pub fn train_gridworld_sarsa_generic(Int, Int, Int) -> TrainingReport
+
+pub fn train_with_memory_logger(Int, Int, Int) -> TrainingReport
+
 pub fn trend(Array[Double]) -> Double
 
 pub fn tutorial_blurb() -> String
@@ -193,6 +203,7 @@ pub fn BanditEnv::render(Self) -> String
 pub fn BanditEnv::reset(Self) -> Int
 pub fn BanditEnv::state_space(Self) -> Array[Int]
 pub fn BanditEnv::step(Self, Int) -> Transition
+pub impl Environment for BanditEnv
 
 pub struct BanditPolicy {
   values : Array[Double]
@@ -253,8 +264,13 @@ pub fn CliffWalkingEnv::render(Self) -> String
 pub fn CliffWalkingEnv::reset(Self) -> Int
 pub fn CliffWalkingEnv::state_space(Self) -> Array[Int]
 pub fn CliffWalkingEnv::step(Self, Int) -> Transition
+pub impl Environment for CliffWalkingEnv
 
-type ConsoleLogger derive(@debug.Debug)
+pub struct ConsoleLogger {
+  prefix : String
+} derive(@debug.Debug)
+pub fn ConsoleLogger::new(String) -> Self
+pub impl Logger for ConsoleLogger
 
 pub struct DoubleQLearningAgent {
   left : QTable
@@ -293,7 +309,13 @@ pub fn EpisodeAccumulator::finish(Self, Int) -> EvaluationPoint
 pub fn EpisodeAccumulator::new() -> Self
 pub fn EpisodeAccumulator::observe(Self, Transition) -> Unit
 
-type EpisodeRecord derive(Eq, @debug.Debug)
+pub struct EpisodeRecord {
+  episode : Int
+  steps : Int
+  reward : Double
+  goal_reached : Bool
+  final_state : Int
+} derive(Eq, @debug.Debug)
 
 type EpisodeStage derive(Eq, @debug.Debug)
 
@@ -306,8 +328,13 @@ pub fn EpisodeTrace::push(Self, Transition) -> Unit
 pub fn EpisodeTrace::returns(Self, Double) -> Array[Double]
 pub fn EpisodeTrace::total_reward(Self) -> Double
 
-type EpsilonGreedyPolicy derive(@debug.Debug)
+pub struct EpsilonGreedyPolicy {
+  epsilon : Double
+  rng : LcgRng
+} derive(@debug.Debug)
+pub fn EpsilonGreedyPolicy::choose_action(Self, Int, Array[Int], Array[Double]) -> Int
 pub fn EpsilonGreedyPolicy::new(Double, Int) -> Self
+pub impl Policy for EpsilonGreedyPolicy
 
 pub struct EpsilonSchedule {
   start : Double
@@ -346,6 +373,7 @@ pub fn ExpectedSARSAAgent::learn(Self, Transition, Int?) -> Unit
 pub fn ExpectedSARSAAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
 pub fn ExpectedSARSAAgent::q_report(Self, Int) -> String
 pub fn ExpectedSARSAAgent::reset_episode(Self) -> Unit
+pub impl Agent for ExpectedSARSAAgent
 
 pub struct ExperimentSummary {
   name : String
@@ -354,12 +382,23 @@ pub struct ExperimentSummary {
 } derive(@debug.Debug)
 pub fn ExperimentSummary::report(Self) -> String
 
-type GridWorldEnv derive(@debug.Debug)
+pub struct GridWorldEnv {
+  width : Int
+  height : Int
+  start_x : Int
+  start_y : Int
+  goal_x : Int
+  goal_y : Int
+  mut x : Int
+  mut y : Int
+  mut _last_stage : EpisodeStage
+} derive(@debug.Debug)
 pub fn GridWorldEnv::actions(Self) -> Array[Int]
 pub fn GridWorldEnv::new() -> Self
 pub fn GridWorldEnv::render(Self) -> String
 pub fn GridWorldEnv::state_space(Self) -> Array[Int]
 pub fn GridWorldEnv::step(Self, Int) -> Transition
+pub impl Environment for GridWorldEnv
 
 type LcgRng derive(@debug.Debug)
 
@@ -370,6 +409,18 @@ pub struct LearningRateSchedule {
 } derive(Eq, @debug.Debug)
 pub fn LearningRateSchedule::new(Double, Double, Double) -> Self
 pub fn LearningRateSchedule::value(Self, Int) -> Double
+
+pub struct MemoryLogger {
+  mut started : Int
+  mut transitions : Int
+  mut finished : Int
+  mut last_report : TrainingReport?
+} derive(@debug.Debug)
+pub fn MemoryLogger::finished_count(Self) -> Int
+pub fn MemoryLogger::new() -> Self
+pub fn MemoryLogger::started_count(Self) -> Int
+pub fn MemoryLogger::transition_count(Self) -> Int
+pub impl Logger for MemoryLogger
 
 pub struct MonteCarloAgent {
   table : QTable
@@ -392,7 +443,12 @@ pub struct PolicyEvaluation {
 } derive(@debug.Debug)
 pub fn PolicyEvaluation::value(Self, Int) -> Double
 
-type QLearningAgent derive(@debug.Debug)
+pub struct QLearningAgent {
+  table : QTable
+  policy : EpsilonGreedyPolicy
+  alpha : Double
+  gamma : Double
+} derive(@debug.Debug)
 pub fn QLearningAgent::choose_action(Self, Int) -> Int
 pub fn QLearningAgent::epsilon(Self) -> Double
 pub fn QLearningAgent::learn(Self, Transition, Int?) -> Unit
@@ -401,6 +457,7 @@ pub fn QLearningAgent::q_report(Self, Int) -> String
 pub fn QLearningAgent::q_value(Self, Int, Int) -> Double
 pub fn QLearningAgent::reset_episode(Self) -> Unit
 pub fn QLearningAgent::set_q_value(Self, Int, Int, Double) -> Unit
+pub impl Agent for QLearningAgent
 
 type QTable derive(@debug.Debug)
 
@@ -418,6 +475,7 @@ pub fn RandomWalkEnv::render(Self) -> String
 pub fn RandomWalkEnv::reset(Self) -> Int
 pub fn RandomWalkEnv::state_space(Self) -> Array[Int]
 pub fn RandomWalkEnv::step(Self, Int) -> Transition
+pub impl Environment for RandomWalkEnv
 
 pub struct ReplayBuffer {
   capacity : Int
@@ -463,13 +521,19 @@ pub fn RunningStats::standard_error(Self) -> Double
 pub fn RunningStats::summary(Self) -> String
 pub fn RunningStats::variance(Self) -> Double
 
-type SARSAAgent derive(@debug.Debug)
+pub struct SARSAAgent {
+  table : QTable
+  policy : EpsilonGreedyPolicy
+  alpha : Double
+  gamma : Double
+} derive(@debug.Debug)
 pub fn SARSAAgent::choose_action(Self, Int) -> Int
 pub fn SARSAAgent::epsilon(Self) -> Double
 pub fn SARSAAgent::learn(Self, Transition, Int?) -> Unit
 pub fn SARSAAgent::new(Array[Int], Array[Int], EpsilonGreedyPolicy, Double, Double) -> Self
 pub fn SARSAAgent::q_report(Self, Int) -> String
 pub fn SARSAAgent::reset_episode(Self) -> Unit
+pub impl Agent for SARSAAgent
 
 pub struct Scorecard {
   name : String
@@ -500,15 +564,38 @@ pub fn SeedBank::distinct(Self) -> Bool
 pub fn SeedBank::length(Self) -> Int
 pub fn SeedBank::new(Int, Int) -> Self
 
-type Trainer derive(@debug.Debug)
+pub struct Trainer {
+  episodes : Int
+  max_steps : Int
+} derive(@debug.Debug)
 pub fn Trainer::new(Int, Int) -> Self
+pub fn[Env : Environment, Ag : Agent, Log : Logger] Trainer::train(Self, Env, Ag, Log) -> TrainingReport
 pub fn Trainer::train_q_learning(Self, GridWorldEnv, QLearningAgent, ConsoleLogger) -> TrainingReport
 pub fn Trainer::train_sarsa(Self, GridWorldEnv, SARSAAgent, ConsoleLogger) -> TrainingReport
 
-type TrainingReport derive(@debug.Debug)
+pub struct TrainingReport {
+  label : String
+  episodes : Int
+  mut rewards : Array[Double]
+  mut steps : Array[Int]
+  mut goal_hits : Int
+  mut final_epsilon : Double
+} derive(@debug.Debug)
 pub fn TrainingReport::compact_line(Self) -> String
+pub fn TrainingReport::episode_count(Self) -> Int
+pub fn TrainingReport::final_epsilon_value(Self) -> Double
+pub fn TrainingReport::goal_count(Self) -> Int
+pub fn TrainingReport::reward_at(Self, Int) -> Double
+pub fn TrainingReport::steps_at(Self, Int) -> Int
 
-type Transition derive(Eq, @debug.Debug)
+pub struct Transition {
+  state : Int
+  action : Int
+  reward : Double
+  next_state : Int
+  done : Bool
+  mut step : Int
+} derive(Eq, @debug.Debug)
 pub fn Transition::action(Self) -> Int
 pub fn Transition::done(Self) -> Bool
 pub fn Transition::new(Int, Int, Double, Int, Bool, Int) -> Self
@@ -556,7 +643,7 @@ pub fn ValueIterationResult::value(Self, Int) -> Double
 // Type aliases
 
 // Traits
-pub trait Agent {
+pub(open) trait Agent {
   fn reset_episode(Self) -> Unit
   fn choose_action(Self, Int) -> Int
   fn learn(Self, Transition, Int?) -> Unit
@@ -564,7 +651,7 @@ pub trait Agent {
   fn q_report(Self, Int) -> String
 }
 
-pub trait Environment {
+pub(open) trait Environment {
   fn reset(Self) -> Int
   fn actions(Self) -> Array[Int]
   fn state_space(Self) -> Array[Int]
@@ -572,14 +659,14 @@ pub trait Environment {
   fn render(Self) -> String
 }
 
-pub trait Logger {
+pub(open) trait Logger {
   fn start_episode(Self, Int) -> Unit
   fn step(Self, Int, Int, Int, Double, Int, Bool, Int) -> Unit
   fn finish_episode(Self, EpisodeRecord) -> Unit
   fn finish(Self, TrainingReport) -> Unit
 }
 
-pub trait Policy {
+pub(open) trait Policy {
   fn choose_action(Self, Int, Array[Int], Array[Double]) -> Int
 }
 

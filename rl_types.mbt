@@ -5,7 +5,7 @@ enum EpisodeStage {
 } derive(Debug, Eq)
 
 ///|
-struct Transition {
+pub struct Transition {
   state : Int
   action : Int
   reward : Double
@@ -15,7 +15,7 @@ struct Transition {
 } derive(Debug, Eq)
 
 ///|
-struct EpisodeRecord {
+pub struct EpisodeRecord {
   episode : Int
   steps : Int
   reward : Double
@@ -24,7 +24,7 @@ struct EpisodeRecord {
 } derive(Debug, Eq)
 
 ///|
-struct TrainingReport {
+pub struct TrainingReport {
   label : String
   episodes : Int
   mut rewards : Array[Double]
@@ -35,69 +35,113 @@ struct TrainingReport {
 
 ///|
 fn TrainingReport::summary(self : TrainingReport) -> String {
-  let mut total_reward = 0.0
-  let mut total_steps = 0
-  let mut best_reward = -999999.0
-  let mut best_episode = 0
-  let recent_start = if self.episodes > 12 { self.episodes - 12 } else { 0 }
-  let mut recent_reward = 0.0
-  let mut recent_count = 0
-  let mut i = 0
-  while i < self.episodes {
-    let reward = self.rewards[i]
-    let step_count = self.steps[i]
-    total_reward = total_reward + reward
-    total_steps = total_steps + step_count
-    if reward > best_reward {
-      best_reward = reward
-      best_episode = i + 1
-    }
-    if i >= recent_start {
-      recent_reward = recent_reward + reward
-      recent_count = recent_count + 1
-    }
-    i = i + 1
-  }
-  let average_reward = total_reward / self.episodes.to_double()
-  let average_steps = total_steps.to_double() / self.episodes.to_double()
-  let recent_average = if recent_count == 0 {
-    0.0
+  if self.episodes == 0 {
+    "label=\{self.label}\nepisodes=0\ngoal_hits=0\naverage_reward=0.0\naverage_steps=0.0\nrecent_12_reward=0.0\nbest_episode=0\nbest_reward=0.0\nfinal_epsilon=\{self.final_epsilon}"
   } else {
-    recent_reward / recent_count.to_double()
+    let mut total_reward = 0.0
+    let mut total_steps = 0
+    let mut best_reward = -999999.0
+    let mut best_episode = 0
+    let recent_start = if self.episodes > 12 { self.episodes - 12 } else { 0 }
+    let mut recent_reward = 0.0
+    let mut recent_count = 0
+    let mut i = 0
+    while i < self.episodes {
+      let reward = self.rewards[i]
+      let step_count = self.steps[i]
+      total_reward = total_reward + reward
+      total_steps = total_steps + step_count
+      if reward > best_reward {
+        best_reward = reward
+        best_episode = i + 1
+      }
+      if i >= recent_start {
+        recent_reward = recent_reward + reward
+        recent_count = recent_count + 1
+      }
+      i = i + 1
+    }
+    let average_reward = total_reward / self.episodes.to_double()
+    let average_steps = total_steps.to_double() / self.episodes.to_double()
+    let recent_average = if recent_count == 0 {
+      0.0
+    } else {
+      recent_reward / recent_count.to_double()
+    }
+    let summary0 = "label=\{self.label}\n"
+    let summary1 = summary0 + "episodes=\{self.episodes}\n"
+    let summary2 = summary1 + "goal_hits=\{self.goal_hits}\n"
+    let summary3 = summary2 + "average_reward=\{average_reward}\n"
+    let summary4 = summary3 + "average_steps=\{average_steps}\n"
+    let summary5 = summary4 + "recent_12_reward=\{recent_average}\n"
+    let summary6 = summary5 + "best_episode=\{best_episode}\n"
+    let summary7 = summary6 + "best_reward=\{best_reward}\n"
+    let summary8 = summary7 + "final_epsilon=\{self.final_epsilon}"
+    summary8
   }
-  let summary0 = "label=\{self.label}\n"
-  let summary1 = summary0 + "episodes=\{self.episodes}\n"
-  let summary2 = summary1 + "goal_hits=\{self.goal_hits}\n"
-  let summary3 = summary2 + "average_reward=\{average_reward}\n"
-  let summary4 = summary3 + "average_steps=\{average_steps}\n"
-  let summary5 = summary4 + "recent_12_reward=\{recent_average}\n"
-  let summary6 = summary5 + "best_episode=\{best_episode}\n"
-  let summary7 = summary6 + "best_reward=\{best_reward}\n"
-  let summary8 = summary7 + "final_epsilon=\{self.final_epsilon}"
-  summary8
 }
 
 ///|
 pub fn TrainingReport::compact_line(self : TrainingReport) -> String {
-  let mut total_reward = 0.0
-  let mut tail_reward = 0.0
-  let mut tail_count = 0
-  let tail_start = if self.episodes > 10 { self.episodes - 10 } else { 0 }
-  let mut i = 0
-  while i < self.episodes {
-    total_reward = total_reward + self.rewards[i]
-    if i >= tail_start {
-      tail_reward = tail_reward + self.rewards[i]
-      tail_count = tail_count + 1
+  if self.episodes == 0 {
+    "\{self.label}: avg_reward=0.0, tail10=0.0, goal_hits=0"
+  } else {
+    let mut total_reward = 0.0
+    let mut tail_reward = 0.0
+    let mut tail_count = 0
+    let tail_start = if self.episodes > 10 { self.episodes - 10 } else { 0 }
+    let mut i = 0
+    while i < self.episodes {
+      total_reward = total_reward + self.rewards[i]
+      if i >= tail_start {
+        tail_reward = tail_reward + self.rewards[i]
+        tail_count = tail_count + 1
+      }
+      i = i + 1
     }
-    i = i + 1
+    let tail_average = if tail_count == 0 {
+      0.0
+    } else {
+      tail_reward / tail_count.to_double()
+    }
+    "\{self.label}: avg_reward=\{total_reward / self.episodes.to_double()}, tail10=\{tail_average}, goal_hits=\{self.goal_hits}"
   }
-  let tail_average = if tail_count == 0 {
+}
+
+///|
+pub fn TrainingReport::episode_count(self : TrainingReport) -> Int {
+  self.episodes
+}
+
+///|
+pub fn TrainingReport::goal_count(self : TrainingReport) -> Int {
+  self.goal_hits
+}
+
+///|
+pub fn TrainingReport::reward_at(
+  self : TrainingReport,
+  episode : Int,
+) -> Double {
+  if episode < 0 || episode >= self.rewards.length() {
     0.0
   } else {
-    tail_reward / tail_count.to_double()
+    self.rewards[episode]
   }
-  "\{self.label}: avg_reward=\{total_reward / self.episodes.to_double()}, tail10=\{tail_average}, goal_hits=\{self.goal_hits}"
+}
+
+///|
+pub fn TrainingReport::steps_at(self : TrainingReport, episode : Int) -> Int {
+  if episode < 0 || episode >= self.steps.length() {
+    0
+  } else {
+    self.steps[episode]
+  }
+}
+
+///|
+pub fn TrainingReport::final_epsilon_value(self : TrainingReport) -> Double {
+  self.final_epsilon
 }
 
 ///|
@@ -121,13 +165,18 @@ struct QTable {
 
 ///|
 fn QTable::new(state_count : Int, action_count : Int) -> QTable {
-  let values = Array::make(state_count, Array::make(action_count, 0.0))
+  let safe_state_count = if state_count < 1 { 1 } else { state_count }
+  let safe_action_count = if action_count < 1 { 1 } else { action_count }
+  let values = Array::make(
+    safe_state_count,
+    Array::make(safe_action_count, 0.0),
+  )
   let mut i = 0
-  while i < state_count {
-    values[i] = Array::make(action_count, 0.0)
+  while i < safe_state_count {
+    values[i] = Array::make(safe_action_count, 0.0)
     i = i + 1
   }
-  { state_count, action_count, values }
+  { state_count: safe_state_count, action_count: safe_action_count, values }
 }
 
 ///|
@@ -233,7 +282,7 @@ fn LcgRng::next_double(self : LcgRng) -> Double {
 }
 
 ///|
-struct EpsilonGreedyPolicy {
+pub struct EpsilonGreedyPolicy {
   epsilon : Double
   rng : LcgRng
 } derive(Debug)
@@ -247,32 +296,36 @@ pub fn EpsilonGreedyPolicy::new(
 }
 
 ///|
-fn EpsilonGreedyPolicy::choose_action(
+pub fn EpsilonGreedyPolicy::choose_action(
   self : EpsilonGreedyPolicy,
   _state : Int,
   actions : Array[Int],
   q_values : Array[Double],
 ) -> Int {
-  let explore = self.rng.next_double() < self.epsilon
-  if explore {
-    actions[self.rng.next_int(actions.length())]
+  if actions.length() == 0 || q_values.length() == 0 {
+    0
   } else {
-    let mut best = 0
-    let mut best_value = q_values[0]
-    let mut i = 1
-    while i < q_values.length() {
-      if q_values[i] > best_value {
-        best = i
-        best_value = q_values[i]
+    let explore = self.rng.next_double() < self.epsilon
+    if explore {
+      actions[self.rng.next_int(actions.length())]
+    } else {
+      let mut best = 0
+      let mut best_value = q_values[0]
+      let mut i = 1
+      while i < q_values.length() {
+        if q_values[i] > best_value {
+          best = i
+          best_value = q_values[i]
+        }
+        i = i + 1
       }
-      i = i + 1
+      actions[best]
     }
-    actions[best]
   }
 }
 
 ///|
-pub trait Environment {
+pub(open) trait Environment {
   fn reset(Self) -> Int
   fn actions(Self) -> Array[Int]
   fn state_space(Self) -> Array[Int]
@@ -281,12 +334,12 @@ pub trait Environment {
 }
 
 ///|
-pub trait Policy {
+pub(open) trait Policy {
   fn choose_action(Self, Int, Array[Int], Array[Double]) -> Int
 }
 
 ///|
-pub trait Agent {
+pub(open) trait Agent {
   fn reset_episode(Self) -> Unit
   fn choose_action(Self, Int) -> Int
   fn learn(Self, Transition, Int?) -> Unit
@@ -295,7 +348,7 @@ pub trait Agent {
 }
 
 ///|
-pub trait Logger {
+pub(open) trait Logger {
   fn start_episode(Self, Int) -> Unit
   fn step(Self, Int, Int, Int, Double, Int, Bool, Int) -> Unit
   fn finish_episode(Self, EpisodeRecord) -> Unit
@@ -303,7 +356,7 @@ pub trait Logger {
 }
 
 ///|
-struct GridWorldEnv {
+pub struct GridWorldEnv {
   width : Int
   height : Int
   start_x : Int
@@ -448,7 +501,7 @@ pub fn GridWorldEnv::render(self : GridWorldEnv) -> String {
 }
 
 ///|
-struct QLearningAgent {
+pub struct QLearningAgent {
   table : QTable
   policy : EpsilonGreedyPolicy
   alpha : Double
@@ -526,7 +579,7 @@ pub fn QLearningAgent::set_q_value(
 }
 
 ///|
-struct SARSAAgent {
+pub struct SARSAAgent {
   table : QTable
   policy : EpsilonGreedyPolicy
   alpha : Double
@@ -589,12 +642,12 @@ pub fn SARSAAgent::q_report(self : SARSAAgent, state : Int) -> String {
 }
 
 ///|
-struct ConsoleLogger {
+pub struct ConsoleLogger {
   prefix : String
 } derive(Debug)
 
 ///|
-fn ConsoleLogger::new(prefix : String) -> ConsoleLogger {
+pub fn ConsoleLogger::new(prefix : String) -> ConsoleLogger {
   { prefix, }
 }
 
@@ -638,14 +691,25 @@ fn ConsoleLogger::finish(self : ConsoleLogger, report : TrainingReport) -> Unit 
 }
 
 ///|
-struct Trainer {
+pub struct Trainer {
   episodes : Int
   max_steps : Int
 } derive(Debug)
 
 ///|
 pub fn Trainer::new(episodes : Int, max_steps : Int) -> Trainer {
-  { episodes, max_steps }
+  {
+    episodes: if episodes < 0 {
+      0
+    } else {
+      episodes
+    },
+    max_steps: if max_steps < 1 {
+      1
+    } else {
+      max_steps
+    },
+  }
 }
 
 ///|

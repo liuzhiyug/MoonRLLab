@@ -2,6 +2,8 @@
 
 MoonRLLab is a reproducible tabular reinforcement-learning toolkit written in MoonBit for the 2026 MoonBit Software Synthesis Challenge.
 
+Current package version: `0.1.1`.
+
 Repository links:
 
 - GitLink: https://gitlink.org.cn/lzylzy78/MoonRLLab
@@ -25,6 +27,12 @@ Project policy:
 - `Benchmarks`: GridWorld, CliffWalking, RandomWalk and deterministic multi-armed bandit
 - `Validation`: environment audits, configuration checks and release evidence
 
+The public extension points are open MoonBit traits. `Trainer::train` is
+generic over `Environment`, `Agent` and `Logger`, so a downstream package can
+provide its own environment or silent/structured logger without editing the
+core trainer. Built-in implementations are registered explicitly and covered
+by tests.
+
 ## Functional boundaries
 
 The current release targets finite, discrete control problems. It provides reusable environment/agent interfaces, deterministic seeds, bounded episode budgets, baseline planning, tabular learners, evaluation reports and invalid-input handling. It does not claim continuous-control, deep-learning, distributed training or external data ingestion.
@@ -44,6 +52,18 @@ The benchmark catalog is exposed by `benchmark_manifest()`:
 moon check
 moon test
 moon run cmd/main
+moon run examples/basic
+```
+
+As a library, add the module with `moon add liuzhiyug/moonrllab`, then call:
+
+```moonbit
+import { "liuzhiyug/moonrllab" }
+
+fn main {
+  let report = @moonrllab.train_with_memory_logger(8, 40, 20260815)
+  println(report.compact_line())
+}
 ```
 
 For stricter local verification:
@@ -51,6 +71,9 @@ For stricter local verification:
 ```bash
 moon check --deny-warn
 moon test --deny-warn
+moon check --target all
+moon build --target all
+moon test --target all
 moon fmt && git diff --exit-code
 moon info && git diff --exit-code
 ```

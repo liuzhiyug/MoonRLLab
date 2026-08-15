@@ -15,6 +15,7 @@ This is the local evidence report for final-acceptance preparation. It does not 
 - Core interfaces: environment, policy, agent, logger and trainer.
 - Algorithms: Q-learning, SARSA, Expected SARSA, Monte Carlo and Double Q-learning.
 - Environments: GridWorld, CliffWalking, RandomWalk and multi-armed bandit.
+- Generic training: open `Environment`, `Policy`, `Agent` and `Logger` traits are explicitly implemented and consumed by generic `Trainer::train`.
 - Evaluation: stable statistics, schedules, replay, value iteration, policy evaluation, CSV/Markdown reporting and validation audits.
 - Boundary coverage includes invalid actions, empty/negative configuration, terminal transitions, replay capacity, clamped schedules and deterministic seeds.
 - Effective MoonBit source scale is above 3,000 lines including tests.
@@ -23,7 +24,8 @@ This is the local evidence report for final-acceptance preparation. It does not 
 
 - `moon version --all`: moonc `0.10.3`.
 - `moon check --deny-warn`: passes.
-- `moon test --deny-warn`: 12 tests passed.
+- `moon test --deny-warn`: 17 tests passed after generic trainer and boundary coverage was added.
+- `moon run examples/basic`: library invocation succeeds through `MemoryLogger`.
 - `moon fmt`: completes successfully.
 - `moon info`: completes successfully and generated interfaces are locally reviewed.
 - `moon run cmd/main`: prints a training summary.

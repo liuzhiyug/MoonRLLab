@@ -1,0 +1,7 @@
+import {
+  "liuzhiyug/moonrllab",
+}
+
+options(
+  "is-main": true,
+)

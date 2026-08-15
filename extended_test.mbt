@@ -122,3 +122,33 @@ test "reporting keeps table shapes and deterministic summaries" {
   assert_true(result_health(result).contains("valid=true"))
   assert_true(report_version().contains("v1"))
 }
+
+///|
+test "generic trainer executes SARSA through open traits" {
+  let report = train_with_memory_logger(4, 20, 61)
+  assert_eq(report.episodes, 4)
+  assert_eq(report.rewards.length(), 4)
+  assert_true(report.steps[0] > 0)
+}
+
+///|
+test "generic trainer covers Expected SARSA and CliffWalking" {
+  let expected = train_gridworld_expected_sarsa_generic(3, 16, 67)
+  let cliff = train_cliff_qlearning_generic(3, 24, 71)
+  assert_eq(expected.episodes, 3)
+  assert_eq(cliff.episodes, 3)
+  assert_true(expected.steps[0] > 0)
+  assert_true(cliff.steps[0] > 0)
+}
+
+///|
+test "trainer and learner boundaries are safe" {
+  let report = Trainer::new(-4, 0).train(
+    GridWorldEnv::new(),
+    QLearningAgent::new([], [], EpsilonGreedyPolicy::new(0.0, 73), 0.2, 0.9),
+    MemoryLogger::new(),
+  )
+  assert_eq(report.episodes, 0)
+  assert_true(report.compact_line().contains("avg_reward=0.0"))
+  assert_eq(EpsilonGreedyPolicy::new(0.0, 79).choose_action(0, [], []), 0)
+}
