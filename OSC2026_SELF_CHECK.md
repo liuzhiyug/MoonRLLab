@@ -1,6 +1,6 @@
 # OSC2026 Self-Check
 
-This is the local evidence report for final-acceptance preparation. It does not claim that remote GitHub, GitLink or mooncakes.io state has been verified until authorized publication.
+This is the final evidence report for acceptance self-review. Remote GitHub, GitLink and mooncakes.io state below was verified after authorized publication.
 
 ## Repository evidence
 
@@ -29,12 +29,12 @@ This is the local evidence report for final-acceptance preparation. It does not 
 - `moon fmt`: completes successfully.
 - `moon info`: completes successfully and generated interfaces are locally reviewed.
 - `moon run cmd/main`: prints a training summary.
-- GitHub Actions run `all-target` check/build/test, focused Wasm check/test, the library example and format/API generation; the latest run for `db07454` passed.
+- GitHub Actions run `all-target` check/build/test, focused Wasm check/test, the library example and format/API generation; the latest run for `75be7cd` passed.
 - `moon publish` for `liuzhiyug/moonrllab@0.1.1` returned HTTP 200 after package validation.
 
-## Remaining remote checks
+## Final remote evidence
 
-- GitHub `master` contains the final commit `db07454` and the latest Actions run is green.
-- GitLink `lzylzy78/MoonRLLab` still points to `489b3b5`; pushing was rejected by GitLink with `User permission denied for writing`. The GitLink owner/account must grant write access or perform the synchronization.
-- GitHub and GitLink therefore do not yet point to the same final revision; this is the only unresolved external submission-material item.
-- No embedded remote credentials remain in the local remotes or committed files.
+- GitHub `master` and GitLink `master` both point to `75be7cd38ed66ffe7cc7b36d8aec0bf4515491ae`.
+- GitHub Actions for the final commit is green, including all-target check/build/test, focused Wasm validation and the runnable library example.
+- `liuzhiyug/moonrllab@0.1.1` is published on mooncakes.io and the package publish request returned HTTP 200.
+- No embedded remote credentials remain in the local remotes, worktree or committed files.
