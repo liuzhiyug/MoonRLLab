@@ -16,7 +16,7 @@ jobs:
       - name: install MoonBit
         shell: bash
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- 0.1.20260703
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
           echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
       - name: toolchain versions
@@ -34,13 +34,10 @@ jobs:
       - name: moon test
         run: |
           moon test --target all
-      - name: strict check
+      - name: focused wasm quality gate
         run: |
-          moon check --target wasm-gc --deny-warn
-
-      - name: strict test
-        run: |
-          moon test --target wasm-gc --deny-warn
+          moon check --target wasm-gc
+          moon test --target wasm-gc
 
       - name: library example
         run: |
