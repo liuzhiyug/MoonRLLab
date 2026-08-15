@@ -11,7 +11,7 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: install MoonBit
         shell: bash
@@ -34,10 +34,13 @@ jobs:
       - name: moon test
         run: |
           moon test --target all
-      - name: strict warnings
+      - name: strict check
         run: |
-          moon check --deny-warn
-          moon test --deny-warn
+          moon check --target wasm-gc --deny-warn
+
+      - name: strict test
+        run: |
+          moon test --target wasm-gc --deny-warn
 
       - name: library example
         run: |
