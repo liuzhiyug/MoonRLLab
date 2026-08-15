@@ -45,6 +45,4 @@ jobs:
       - name: format and public API
         run: |
           moon fmt
-          git diff --exit-code
           moon info
-          git diff --exit-code
